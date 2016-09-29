@@ -64,7 +64,19 @@
 		}
 		
 	}
-		
+	
+	$notice = "";
+		// mõlemad login vormi väljad on täidetud
+		if (	isset($_POST["loginEmail"]) && 
+				isset($_POST["loginPassword"]) && 
+				!empty($_POST["loginEmail"]) && 
+				!empty($_POST["loginPassword"]) 
+		) {
+			$notice = login($_POST["loginEmail"], $_POST["loginPassword"]);
+			
+		}
+
+	
 ?>
 <!DOCTYPE html>
 <html>
@@ -74,6 +86,7 @@
 <body>
 
 	<h1>Logi sisse</h1><br>
+	<p style="color:red;"><?php echo $notice; ?></p>
 	<form method="POST">
 		<input placeholder="Kasutajanimi / Email" name="loginEmail" type="text"><br><br>
 		<input placeholder="Parool" name="loginPassword" type="password"><br><br>
