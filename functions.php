@@ -23,6 +23,8 @@
 	echo "<br>";
 	*/
 	
+	session_start();
+	
 	$database = "if16_gerltoom";
 	
 	
@@ -80,6 +82,11 @@
 			if ($hash == $passwordFromDb) {
 				// õnnestus 
 				echo "Kasutaja ".$id." logis sisse";
+				
+				$_SESSION["userId"] = $id;
+				$_SESSION["userEmail"] = $emailFromDb;
+				
+				header("Location: data.php");
 				
 			} else {
 				$notice = "Vale parool!";
