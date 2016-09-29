@@ -23,24 +23,71 @@
 	echo "<br>";
 	*/
 	
-	function signup($username, $email, $password){
+	$database = "if16_gerltoom";
+	
+	
+	
+	function signup($email, $password) {
 		
-		$database = "if16_gerltoom";
-		$mysqli = new mysqli($serverHost, $serverUsername, $serverPassword, $database);
+		$mysqli = new mysqli(
 		
-		$stmt = $mysqli->prepare("INSERT INTO user_sample (username, email, password) VALUES(?, ?, ?)");
+		$GLOBALS["serverHost"], 
+		$GLOBALS["serverUsername"],  
+		$GLOBALS["serverPassword"],  
+		$GLOBALS["database"]
 		
-		$stmt->bind_param("sss", $username, $email, $password);
+		);
+		$stmt = $mysqli->prepare("INSERT INTO user_sample (email, password) VALUES (?, ?)");
+		echo $mysqli->error;
 		
-		if ($stmt->execute() ) {
-			
-			echo "salvestamine onnestus";
-			
-		}
-		else {
-			echo "ERROR".$stmt->error;
+		$stmt->bind_param("ss", $email, $password );
+		if ( $stmt->execute() ) {
+			echo "salvestamine õnnestus";	
+		} else {	
+			echo "ERROR ".$stmt->error;
 		}
 		
 	}
+	
+	
+	function login($email, $password) {
+		
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"],  $GLOBALS["serverPassword"],  $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("
+		
+			SELECT id, email, password, created
+			FROM user_sample
+			WHERE email = ?
+		
+		");
+		// asendan ?
+		$stmt->bind_param("s", $email);
+		
+		// määran muutujad reale mis kätte saan
+		$stmt->bind_result($id, $emailFromDb, $passwordFromDb, $created);
+		
+		$stmt->execute();
+		
+		// ainult SLECTI'i puhul
+		if ($stmt->fetch()) {
+			
+			// vähemalt üks rida tuli
+			// kasutaja sisselogimise parool räsiks
+			$hash = hash("sha512", $password);
+			if ($hash == $passwordFromDb) {
+				// õnnestus 
+				echo "Kasutaja ".$id." logis sisse";
+				
+			} else {
+				echo "Vale parool!";
+			}
+			
+		} else {
+			// ei leitud ühtegi rida
+			echo "Sellist emaili ei ole!";
+		}
+	}
+	
 	
 ?>
